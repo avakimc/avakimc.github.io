@@ -1,0 +1,36 @@
+---
+import { getCollection, render } from 'astro:content';
+import CollectionPage from '../layouts/CollectionPage.astro';
+import EntryCard from '../components/EntryCard.astro';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const entries = await Promise.all(
+  projects.map(async (entry) => ({ entry, Content: (await render(entry)).Content })),
+);
+const contents = projects.map((entry) => ({ id: entry.id, label: entry.data.title }));
+---
+
+<CollectionPage
+  title="Independent and Club Projects"
+  description="Independent and club engineering projects by Ava Kim Cohen, across AI, telemetry, AR, and robotics."
+  contents={contents}
+>
+  {
+    entries.map(({ entry, Content }) => (
+      <EntryCard
+        id={entry.id}
+        heading={entry.data.title}
+        headingNote={entry.data.context}
+        subheading={entry.data.role}
+        dates={entry.data.dates}
+        tags={entry.data.tags}
+        links={entry.data.links}
+        media={entry.data.media}
+      >
+        <Content />
+      </EntryCard>
+    ))
+  }
+</CollectionPage>

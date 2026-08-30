@@ -1,0 +1,123 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+
+const education = [
+  {
+    school: 'Columbia University',
+    credential: 'B.S. Applied Mathematics',
+    location: 'New York, NY',
+    facts: [
+      "C.P. Davis Scholar; Dean's List (all semesters)",
+      'Coursework: Advanced Programming, Data Structures, Multivariable Calculus, Probability for Engineers, Principles of Economics',
+    ],
+  },
+  {
+    school: 'The University of Chicago Laboratory High School',
+    location: 'Chicago, IL',
+    facts: [
+      "Dual Enrollment: The University of Chicago Master's Program in Computer Science",
+      'Coursework: Linear Algebra and Multivariable Calculus, Computer Architecture, AP Physics C',
+    ],
+  },
+];
+
+const skills = [
+  { label: 'Languages', value: 'Python · Java · Bash · C' },
+  {
+    label: 'Tools',
+    value:
+      'Git · CLI · Windows Task Scheduler · LaTeX · Palantir AIP · Unity · Magic Leap 2 · OpenXR',
+  },
+  {
+    label: 'Libraries',
+    value:
+      'Playwright · openpyxl · pytest · pandas · sentence-transformers · FAISS · NumPy · altair · Matplotlib · Vosk',
+  },
+  {
+    label: 'APIs',
+    value:
+      'Bloomberg (blpapi / xbbg) · Microsoft Graph · Claude API (Anthropic) · Slack API · Gmail API · SEC EDGAR · FRED · WebSockets',
+  },
+  { label: 'Robotics', value: 'WPILib · PathPlannerLib · REVLib · Phoenix 6' },
+  {
+    label: 'Methods',
+    value:
+      'LLMs · RAG · Monte Carlo Tree Search · Fine-tuning · HCI · Web Scraping · Text-to-Speech',
+  },
+];
+
+const description =
+  'Ava Kim Cohen — applied mathematics at Columbia University. Developed AI systems for an asset manager; prior experience in quantitative research, Human-Computer Interaction research, and robotics. Looking for software engineering and research engineering roles.';
+---
+
+<Base title="Ava Kim Cohen" description={description}>
+  <!-- About. Empty first cell keeps it aligned with the section content column. -->
+  <section class="pb-14 lg:grid lg:grid-cols-[8rem_minmax(0,46rem)] lg:gap-x-10">
+    <div aria-hidden="true"></div>
+    <div>
+      <h1 class="font-display text-4xl sm:text-5xl">Ava Kim Cohen</h1>
+      <p class="mt-3 text-lg text-muted">Applied Math @ Columbia University</p>
+      <p class="mt-5 max-w-[var(--measure)] text-muted">
+        During my most recent summer internship, I developed AI systems for an
+        asset manager. My prior experience also includes quantitative research,
+        Human-Computer Interaction research, and robotics. I'm looking for software
+        engineering and research engineering roles.
+      </p>
+      <ul class="mt-6 space-y-2 text-sm">
+        <li><a href="mailto:ava.kim.cohen@columbia.edu">ava.kim.cohen@columbia.edu</a></li>
+        <li>
+          <a
+            href="https://www.linkedin.com/in/ava-kim-cohen"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            www.linkedin.com/in/ava-kim-cohen
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="space-y-14">
+    <Section id="education" title="Education">
+      {
+        education.map((school) => (
+          <article class="mb-9">
+            <div class="flex flex-col gap-x-6 sm:flex-row sm:items-baseline sm:justify-between">
+              <h3 class="min-w-0 text-xl">{school.school}</h3>
+              <p class="shrink-0 font-mono text-xs text-faint">{school.location}</p>
+            </div>
+            {school.credential && (
+              <p class="mt-1 text-sm text-muted">{school.credential}</p>
+            )}
+            {school.facts.length > 0 && (
+              <ul class="mt-3 space-y-1.5 text-sm text-muted">
+                {school.facts.map((fact) => (
+                  <li class="border-l border-rule pl-3">{fact}</li>
+                ))}
+              </ul>
+            )}
+          </article>
+        ))
+      }
+
+    </Section>
+
+    <Section id="skills" title="Skills">
+      <dl class="space-y-4">
+        {
+          skills.map((groupItem) => (
+            <div class="sm:flex sm:gap-6">
+              <dt class="shrink-0 font-mono text-xs text-faint sm:w-24 sm:pt-1">
+                {groupItem.label}
+              </dt>
+              <dd class="mt-1 text-sm text-muted sm:mt-0">{groupItem.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </Section>
+
+  </div>
+</Base>

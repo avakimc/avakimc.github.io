@@ -1,0 +1,94 @@
+---
+import { getCollection, render } from 'astro:content';
+import CollectionPage from '../layouts/CollectionPage.astro';
+import EntryCard from '../components/EntryCard.astro';
+
+const byOrder = <T extends { data: { order: number } }>(a: T, b: T) =>
+  a.data.order - b.data.order;
+
+const experience = (await getCollection('experience')).sort(byOrder);
+const research = (await getCollection('research')).sort(byOrder);
+
+const entries = await Promise.all(
+  experience.map(async (entry) => ({
+    entry,
+    Content: (await render(entry)).Content,
+    papers: research.filter((paper) => paper.data.experience === entry.id),
+  })),
+);
+
+const contents = experience.map((entry) => ({ id: entry.id, label: entry.data.org }));
+
+// Placeholder paper titles must not reach production silently.
+const pending = research.filter((paper) => paper.data.titlePending);
+if (pending.length > 0) {
+  console.warn(
+    `\n[content] ${pending.length} research entr${
+      pending.length === 1 ? 'y has a placeholder title' : 'ies have placeholder titles'
+    }: ${pending.map((p) => p.id).join(', ')}\n` +
+      `          Replace \`title\` with the real paper title and set \`titlePending: false\`.\n`,
+  );
+}
+
+// A paper whose `experience` id matches nothing would silently vanish from the site.
+const orphans = research.filter(
+  (paper) => !experience.some((entry) => entry.id === paper.data.experience),
+);
+if (orphans.length > 0) {
+  throw new Error(
+    `Research entries reference an unknown experience id and would not render: ${orphans
+      .map((p) => `${p.id} -> "${p.data.experience}"`)
+      .join(', ')}`,
+  );
+}
+---
+
+<CollectionPage
+  title="Work Experience"
+  description="Internship and research positions held by Ava Kim Cohen, with the work and publications from each."
+  contents={contents}
+>
+  {
+    entries.map(({ entry, Content, papers }) => (
+      <EntryCard
+        id={entry.id}
+        heading={entry.data.org}
+        headingNote={entry.data.orgNote}
+        subheading={entry.data.role}
+        meta={entry.data.location}
+        dates={entry.data.dates}
+        tags={entry.data.tags}
+        links={entry.data.links}
+      >
+        <Content />
+        {papers.length > 0 && (
+          <div slot="publications" class="mt-6 border-l border-rule pl-4">
+            <p class="font-mono text-xs text-faint">
+              {papers.length === 1 ? 'Publication' : 'Publications'}
+            </p>
+            <ul class="mt-3 space-y-4">
+              {papers.map((paper) => (
+                <li>
+                  <a
+                    href={paper.data.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="font-display text-base leading-snug"
+                  >
+                    {paper.data.title}
+                  </a>
+                  <p class="mt-1 text-sm text-muted">
+                    {paper.data.venue} · {paper.data.year}
+                    {paper.data.authorNote && (
+                      <span class="text-faint"> · {paper.data.authorNote}</span>
+                    )}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </EntryCard>
+    ))
+  }
+</CollectionPage>
