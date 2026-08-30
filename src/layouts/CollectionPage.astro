@@ -1,0 +1,47 @@
+---
+import Base from './Base.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  lead?: string;
+  /** In-page contents shown in the left rail at lg. Omit for short pages. */
+  contents?: { id: string; label: string }[];
+}
+
+const { title, description, lead, contents = [] } = Astro.props;
+---
+
+<Base title="Ava Kim Cohen" description={description}>
+  <div class="lg:grid lg:grid-cols-[8rem_minmax(0,46rem)] lg:gap-x-10">
+    <div aria-hidden="true"></div>
+    <div class="pb-10">
+      <h1 class="font-display text-3xl sm:text-4xl">{title}</h1>
+      {lead && <p class="mt-3 max-w-[var(--measure)] text-muted">{lead}</p>}
+      {
+        contents.length > 0 && (
+          <nav aria-label={`${title} contents`} class="mt-5">
+            <ul class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              {contents.map((item) => (
+                <li>
+                  <a href={`#${item.id}`} class="no-underline hover:underline">
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+    </div>
+  </div>
+
+  <div
+    class="border-t border-rule pt-10 lg:grid lg:grid-cols-[8rem_minmax(0,46rem)] lg:gap-x-10"
+  >
+    <div aria-hidden="true"></div>
+    <div>
+      <slot />
+    </div>
+  </div>
+</Base>
